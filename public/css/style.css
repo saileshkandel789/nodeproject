@@ -58,3 +58,7 @@ nav li a{
     background: rgb(255,176,176);
     color: red;
 }
+
+.form-control input.invalid, .form-control textarea.invalid {
+    border-color: red;
+}
