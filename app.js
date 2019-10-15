@@ -26,22 +26,22 @@ const store = new MongoDBStore({
 });
 const csrfProtection = csrf();
 
-const fileStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null , 'images');
-    },
-    filename : (req ,file, cb) => {
-        cb(null , new Date().toISOString() + '-' + file.originalname);
-    }
-});
+// const fileStorage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null , 'images');
+//     },
+//     filename : (req ,file, cb) => {
+//         cb(null , new Date().toISOString() + '-' + file.originalname);
+//     }
+// });
 
-const fileFilter = (req , file , cb) => {
-    if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
-        cb(null, true);
-    }else{
-        cb(null, false);
-    }
-}
+// const fileFilter = (req , file , cb) => {
+//     if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+//         cb(null, true);
+//     }else{
+//         cb(null, false);
+//     }
+// }
 // app.engine('hbs', expressHbs({layoutsDir:'views/layout/',defaultLayout:'mainlayout'}));
 app.set('view engine', 'ejs');
 // app.set('view engine','pug');
@@ -69,8 +69,8 @@ const authRoutes = require('./routes/auth');
 
 
 app.use(bodyparser.urlencoded({extended:false}));
-app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'));
-// app.use(multer({ dest: 'images' }).single('image'));
+// app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'));
+app.use(multer({ dest: 'images' }).single('image'));
 app.use(express.static(path.join(__dirname , 'public')));
 app.use(
     session({
