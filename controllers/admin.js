@@ -71,12 +71,7 @@ exports.postAddProduct = (req,res,next) => {
     }
 
     const imageUrl = image.path;
-    // req.user.createProduct({
-    //     title:title,
-    //     price:price,
-    //     imageUrl:imageUrl,
-    //     description:description
-    // })
+    
     const product  = new Product({
         // _id: new mongoose.Types.ObjectId('5d52726018537e0430f17578'), to try database crash error
         title:title,
