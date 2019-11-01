@@ -2,15 +2,9 @@ const crypto = require('crypto');
 
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
-// const sendgridTransport = require('nodemailer-sendgrid-transport');
 const { validationResult } = require('express-validator/check');
 const User = require('../models/user');
 
-// const transporter = nodemailer.createTransport(sendgridTransport({
-//     auth: {
-//         api_key :'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'
-//     }
-// }));
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -22,8 +16,6 @@ const transporter = nodemailer.createTransport({
 
 
 exports.getLogin = (req,res, next) => {
-    // const isLoggedIn = req.get('Cookie').split('=')[1] === 'true';
-    // console.log(req.get('Cookie'));
 
     let message = req.flash('error');
     if(message.length > 0){
@@ -31,7 +23,6 @@ exports.getLogin = (req,res, next) => {
     }else{
         message = null;
     }
-    // console.log(req.flash('error'));
 
     res.render('auth/login', {
         path:'/login',
@@ -44,7 +35,6 @@ exports.getLogin = (req,res, next) => {
 };
 
 exports.postLogin = (req,res, next) => {
-    // res.setHeader('Set-Cookie' , 'loggedIn = true;HttpOnly');
     const email = req.body.email;
     const password = req.body.password;
 
@@ -59,12 +49,9 @@ exports.postLogin = (req,res, next) => {
           });
       }
 
-    // User.findById('5d3969543705592facefd0d6')
     User.findOne({ email: email})
     .then(user => {
         if(!user){
-            // req.flash('error', 'Invalid email or password.');
-            // return res.redirect('/login');
             return res.status(422).render('auth/login', {
                 path: '/login',
                 doctitle: 'Login',
@@ -85,8 +72,6 @@ exports.postLogin = (req,res, next) => {
                     });
                     
                 }
-                // req.flash('error', 'Invalid email or password.');
-                //  res.redirect('/login');
                 return res.status(422).render('auth/login', {
                     path: '/login',
                     doctitle: 'Login',
@@ -105,12 +90,9 @@ exports.postLogin = (req,res, next) => {
         error.httpStatusCode = 500;
         return next(error);
     });
-    // req.session.isLoggedIn = true;
-    // res.redirect('/');
 };
 
 exports.postLogout = (req, res, next) => {
-    // res.setHeader('Set-Cookie' , 'loggedIn = true;HttpOnly');
     req.session.destroy(err => {
         console.log(err);
         res.redirect('/');
@@ -149,12 +131,6 @@ exports.getSignup = (req, res, next) => {
           });
       }
 
-    //   User.findOne({ email:email })
-    //   .then(userDoc => {
-    //     if(userDoc){
-    //         req.flash('error', 'E-mail already exist,please pick different one');
-    //         return res.redirect('/signup');
-    //     }
          bcrypt
         .hash(password, 12)
         .then(hashedPassword => {
@@ -174,12 +150,6 @@ exports.getSignup = (req, res, next) => {
                 text: `<h1> You sucessfully signed up! </h1>`
               };
 
-            //   return transporter.sendMail({
-            //       to: email,
-            //       from:'saileshkandel789@gmail.com',
-            //       subject:'Signup succeeded',
-            //       html : '<h1> You sucessfully signed up! </h1>'
-            //   }
             return transporter.sendMail(mailOptions, function(error, info){
                 if (error) {
                   console.log(error);
@@ -217,7 +187,7 @@ exports.getSignup = (req, res, next) => {
             console.log(err);
             return res.redirect('/reset');
         }
-        const token = buffer.toString('hex'); // change to string with ASCII from hex
+        const token = buffer.toString('hex'); 
         console.log(token);
         User.findOne({email: req.body.email})
         .then( user => {
@@ -233,15 +203,6 @@ exports.getSignup = (req, res, next) => {
         })
         .then(result => {
             res.redirect('/');
-            // var mailOptions1 = {
-            //     from: 'saileshkandel789@gmail.com',
-            //     to: req.body.email,
-            //     subject: 'password reset',
-            //     text: `
-            //         <p>You requested a password reset</p>
-            //         <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new Password</p>
-            //     `
-            //   };
              return transporter.sendMail({
                 from: 'saileshkandel789@gmail.com',
                 to: req.body.email,
@@ -294,7 +255,6 @@ exports.getSignup = (req, res, next) => {
       const userId = req.body.userId;
       const passwordToken = req.body.passwordToken;
       let resetUser;
-    //   let newPassword =  bcrypt.hash(req.body.password , 12);
       User.findOne({
             resetToken: passwordToken,
             resetTokenExpiration : { $gt : Date.now() },
@@ -304,33 +264,6 @@ exports.getSignup = (req, res, next) => {
             console.log(user);
             resetUser = user;
             return bcrypt.hash(newPassword , 12);
-            // resetUser.password = newPassword;
-            // resetUser.resetToken = undefined;
-            // resetUser.resetTokenExpiration = undefined;
-            // return resetUser.save();
-            // console.log(resetUser);
-            // console.log(bcrypt.hash('newPassword', 12));
-            
-            
-            // bcrypt.genSalt(12, function(err, salt) {
-            //     if (err) return next(err);
-            //     bcrypt.hash(newPassword, salt,null, function(err, hash) {
-            //         if (err) return next(err);
-            //         // Store hash in your password DB.
-            //         resetUser.password = hash;
-            //         resetUser.resetToken = undefined;
-            //         resetUser.resetTokenExpiration = undefined;
-            //         return resetUser.save();
-            //     });
-            // });
-
-            // return bcrypt.hash(newPassword , 12);
-            // var salt = bcrypt.genSaltSync(12);
-            // var hash = bcrypt.hashSync(newPassword, salt);
-            // resetUser.password = hash;
-            // resetUser.resetToken = undefined;
-            // resetUser.resetTokenExpiration = undefined;
-            // return resetUser.save();
         })
         .then(hashedPassword => {
             console.log(hashedPassword);
